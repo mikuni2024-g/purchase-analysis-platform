@@ -26,6 +26,7 @@
 # MAGIC * discount_amount: DECIMAL(10,2)
 # MAGIC * transaction_time: TIMESTAMP
 # MAGIC
+# MAGIC
 # MAGIC **Output:** `df_sales` - Strictly validated POS transactions DataFrame
 
 # COMMAND ----------
