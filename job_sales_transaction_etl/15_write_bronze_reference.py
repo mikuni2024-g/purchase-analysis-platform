@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
 # DBTITLE 1,Reference Bronze Ingestion
 # MAGIC %md
 # MAGIC # 01_write_bronze_reference: Reference Data Ingestion to Bronze
@@ -42,7 +46,7 @@ try:
         .withColumn("_source_file", F.lit(file_path)) \
         .withColumn("_batch_id", F.lit(batch_id))
     
-    df_bronze.write.format("delta").mode("overwrite").saveAsTable(bronze_table)
+    df_bronze.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(bronze_table)
     
     record_count = df_bronze.count()
     duration = (datetime.now() - start_time).total_seconds()
@@ -76,7 +80,7 @@ try:
         .withColumn("_source_file", F.lit(file_path)) \
         .withColumn("_batch_id", F.lit(batch_id))
     
-    df_bronze.write.format("delta").mode("overwrite").saveAsTable(bronze_table)
+    df_bronze.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(bronze_table)
     
     record_count = df_bronze.count()
     duration = (datetime.now() - start_time).total_seconds()
@@ -102,7 +106,3 @@ print(f"  ✓ {catalog_name}.bronze.retail_calendar")
 print(f"  ✓ {catalog_name}.bronze.holiday_calendar")
 print("="*70)
 print("\n✓ Reference data successfully landed in Bronze layer")
-
-# COMMAND ----------
-
-

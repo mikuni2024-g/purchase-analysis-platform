@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
 # DBTITLE 1,CRM Bronze Ingestion
 # MAGIC %md
 # MAGIC # 01_write_bronze_crm: CRM Data Ingestion to Bronze
@@ -49,6 +53,7 @@ try:
     df_bronze.write \
         .format("delta") \
         .mode("overwrite") \
+        .option("overwriteSchema", "true") \
         .saveAsTable(bronze_table)
     
     record_count = df_bronze.count()
@@ -93,6 +98,7 @@ try:
     df_bronze.write \
         .format("delta") \
         .mode("overwrite") \
+        .option("overwriteSchema", "true") \
         .saveAsTable(bronze_table)
     
     record_count = df_bronze.count()
@@ -136,6 +142,7 @@ try:
     df_bronze.write \
         .format("delta") \
         .mode("overwrite") \
+        .option("overwriteSchema", "true") \
         .saveAsTable(bronze_table)
     
     record_count = df_bronze.count()
@@ -166,7 +173,3 @@ print(f"  ✓ {catalog_name}.bronze.loyalty_members")
 print(f"  ✓ {catalog_name}.bronze.coupon_dispatches")
 print("="*70)
 print("\n✓ CRM data successfully landed in Bronze layer")
-
-# COMMAND ----------
-
-

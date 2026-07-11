@@ -6,35 +6,21 @@
 # DBTITLE 1,Notebook Overview
 # MAGIC %md
 # MAGIC # 00_initialize: Setup & Parameter Handling
+
+# COMMAND ----------
+
+# DBTITLE 1,Project Structure
+# MAGIC %md
+# MAGIC ## Project Structure
 # MAGIC
-# MAGIC This notebook performs the following initialization steps:
-# MAGIC - Defines and validates job parameters
-# MAGIC - Verifies AWS S3 connectivity (E001 error handling)
-# MAGIC - Sets up Unity Catalog schemas and tables
-# MAGIC - Prepares the execution environment
-# MAGIC - Provides reusable utility functions
+# MAGIC **Workspace Path:** `/Users/mikuni2024@gmail.com/purchase-analysis-platform/job_sales_transaction_etl/`
 # MAGIC
-# MAGIC **Job Parameters:**
-# MAGIC - `job_date`: Processing date (YYYY-MM-DD)
-# MAGIC - `environment`: Deployment environment (dev/test/prod)
-# MAGIC - `input_path`: Source data location (S3 path)
-# MAGIC - `output_database`: Target database (catalog.schema)
-# MAGIC - `batch_id`: Unique batch identifier
-# MAGIC
-# MAGIC **Target Tables (Medallion Architecture):**
-# MAGIC
-# MAGIC **Bronze Layer (13 tables - Raw data landing zone):**
-# MAGIC - Transactional: `pos_transactions`, `online_orders`, `web_clickstream`
-# MAGIC - CRM: `customer_master`, `loyalty_members`, `coupon_dispatches`
-# MAGIC - ERP: `product_master`, `category_master`, `supplier_master`, `store_master`, `inventory_balance`
-# MAGIC - Reference: `retail_calendar`, `holiday_calendar`
-# MAGIC
-# MAGIC **Silver Layer (Validated & enriched):**
-# MAGIC - `silver.fact_sales`: Validated and enriched sales transactions
-# MAGIC - `silver.reject_sales`: Rejected records with rejection reasons
-# MAGIC
-# MAGIC **Audit:**
-# MAGIC - `audit.etl_job_log`: Job execution audit trail
+# MAGIC **Execution Flow:**
+# MAGIC * **Step 1 - Initialize**: `%run ./00_initialize`
+# MAGIC * **Step 2 - Bronze Ingestion** (parallel execution recommended)
+# MAGIC * **Step 3 - Silver Processing** (sequential execution):
+# MAGIC   - `%run ./20_read_sales` → ... → `%run ./26_audit_log`
+# MAGIC * **Orchestration**: Use Databricks Job/Workflow for production scheduling
 
 # COMMAND ----------
 
