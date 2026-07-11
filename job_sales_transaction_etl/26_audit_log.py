@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
 # DBTITLE 1,M007: Audit Logging
 # MAGIC %md
 # MAGIC # 07_audit_log: Job Audit Logging (M007)
@@ -133,7 +137,3 @@ print("="*70)
 # Show recent audit logs
 print("\nRecent Audit Logs:")
 display(spark.table(audit_table).orderBy(F.col("start_timestamp").desc()).limit(10))
-
-# COMMAND ----------
-
-
