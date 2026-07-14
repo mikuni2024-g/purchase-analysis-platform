@@ -5,7 +5,7 @@
 # ///
 # DBTITLE 1,M005: Master Table Joins
 # MAGIC %md
-# MAGIC # 05_join_master: Master Table Joins (M005)
+# MAGIC # 24_join_master: Master Table Joins (M005)
 # MAGIC
 # MAGIC This notebook performs:
 # MAGIC * Joining sales transactions with master tables
@@ -14,7 +14,7 @@
 # MAGIC * Store dimension enrichment
 # MAGIC * Creating the final enriched dataset
 # MAGIC
-# MAGIC **Dependencies:** Run `04_transformation` and `02_read_master` first
+# MAGIC **Dependencies:** Run `23_transformation` and `21_read_master` first
 # MAGIC
 # MAGIC **Output:** `df_sales_enriched` - Fully enriched sales data
 
@@ -26,12 +26,12 @@
 # COMMAND ----------
 
 # DBTITLE 1,Load Transformed Data
-# MAGIC %run ./04_transformation
+# MAGIC %run ./23_transformation
 
 # COMMAND ----------
 
 # DBTITLE 1,Load Master Tables
-# MAGIC %run ./02_read_master
+# MAGIC %run ./21_read_master
 
 # COMMAND ----------
 

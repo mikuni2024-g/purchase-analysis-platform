@@ -5,7 +5,7 @@
 # ///
 # DBTITLE 1,M001: Load POS Transactions
 # MAGIC %md
-# MAGIC # 02_read_sales: Load POS Transactions from Bronze (M002)
+# MAGIC # 20_read_sales: Load POS Transactions from Bronze (M002)
 # MAGIC
 # MAGIC This notebook reads validated POS transactions from the Bronze layer:
 # MAGIC * Reads from `bronze.pos_transactions` Delta table (raw data landing zone)
@@ -44,16 +44,30 @@ print(f"Reading POS transactions from Bronze: {bronze_table}")
 print(f"Filtering by: _job_date = {job_date}, _batch_id = {batch_id}")
 
 try:
-    # Read from Bronze layer (filtered by job_date and batch_id)
-    df_bronze_raw = spark.read.table(bronze_table) \
-        .filter(F.col("_job_date") == job_date) \
-        .filter(F.col("_batch_id") == batch_id)
+    # Read from Bronze layer (filtered by job_date, use most recent batch if current batch_id not found)
+    df_bronze_all = spark.read.table(bronze_table).filter(F.col("_job_date") == job_date)
     
-    # Check if data exists for this batch
-    if df_bronze_raw.count() == 0:
-        error_message = f"E002: No data found in Bronze for job_date={job_date}, batch_id={batch_id}"
+    # Check if data exists for this job_date
+    if df_bronze_all.count() == 0:
+        error_message = f"E002: No data found in Bronze for job_date={job_date}"
         print(f"\n✗ {error_message}")
         raise ValueError(error_message)
+    
+    # Try to find data with current batch_id, fall back to most recent batch
+    df_bronze_raw = df_bronze_all.filter(F.col("_batch_id") == batch_id)
+    
+    if df_bronze_raw.count() == 0:
+        # Current batch_id not found, use the most recent batch for this job_date
+        from pyspark.sql import Window
+        latest_batch = df_bronze_all.select("_batch_id", "_ingestion_timestamp") \
+            .distinct() \
+            .orderBy(F.col("_ingestion_timestamp").desc()) \
+            .first()["_batch_id"]
+        
+        print(f"⚠ Warning: Current batch_id {batch_id} not found in Bronze")
+        print(f"  Using most recent batch: {latest_batch}")
+        
+        df_bronze_raw = df_bronze_all.filter(F.col("_batch_id") == latest_batch)
     
     print(f"✓ Found {df_bronze_raw.count():,} records in Bronze layer")
     
@@ -61,14 +75,14 @@ try:
     print("\nApplying schema casting...")
     
     df_sales_raw = df_bronze_raw.select(
-        F.col("transaction_id").cast("string").alias("transaction_id"),
-        F.col("customer_id").cast("string").alias("customer_id"),
-        F.col("product_id").cast("string").alias("product_id"),
-        F.col("store_id").cast("string").alias("store_id"),
-        F.col("quantity").cast("int").alias("quantity"),
-        F.col("unit_price").cast("decimal(10,2)").alias("unit_price"),
-        F.col("discount_amount").cast("decimal(10,2)").alias("discount_amount"),
-        F.col("transaction_time").cast("timestamp").alias("transaction_time")
+        F.col("transaction_id"),
+        F.col("customer_id"),
+        F.col("product_id"),
+        F.col("store_id"),
+        F.expr("try_cast(quantity as int)").alias("quantity"),
+        F.expr("try_cast(unit_price as decimal(10,2))").alias("unit_price"),
+        F.expr("try_cast(discount_amount as decimal(10,2))").alias("discount_amount"),
+        F.expr("try_cast(transaction_time as timestamp)").alias("transaction_time")
     )
     
     record_count = df_sales_raw.count()

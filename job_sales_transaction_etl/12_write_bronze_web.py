@@ -5,7 +5,7 @@
 # ///
 # DBTITLE 1,Web Clickstream Bronze Ingestion
 # MAGIC %md
-# MAGIC # 15_write_bronze_web: Web Clickstream Data Ingestion to Bronze
+# MAGIC # 12_write_bronze_web: Web Clickstream Data Ingestion to Bronze
 # MAGIC
 # MAGIC This notebook ingests web clickstream/analytics data to Bronze layer:
 # MAGIC * **web_clickstream_YYYYMMDD.log** → `bronze.web_clickstream`

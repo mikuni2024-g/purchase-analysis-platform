@@ -5,7 +5,7 @@
 # ///
 # DBTITLE 1,E-commerce Bronze Ingestion
 # MAGIC %md
-# MAGIC # 14_write_bronze_ecommerce: E-commerce Data Ingestion to Bronze
+# MAGIC # 11_write_bronze_ecommerce: E-commerce Data Ingestion to Bronze
 # MAGIC
 # MAGIC This notebook ingests e-commerce transaction data to Bronze layer:
 # MAGIC * **online_orders_YYYYMMDD.json** → `bronze.online_orders`

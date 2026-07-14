@@ -5,7 +5,7 @@
 # ///
 # DBTITLE 1,Reference Bronze Ingestion
 # MAGIC %md
-# MAGIC # 01_write_bronze_reference: Reference Data Ingestion to Bronze
+# MAGIC # 15_write_bronze_reference: Reference Data Ingestion to Bronze
 # MAGIC
 # MAGIC This notebook ingests reference/dimension data sources to Bronze layer:
 # MAGIC * **retail_calendar.csv** → `bronze.retail_calendar`

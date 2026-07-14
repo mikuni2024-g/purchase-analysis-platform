@@ -5,7 +5,7 @@
 # ///
 # DBTITLE 1,M002: Load Master Tables
 # MAGIC %md
-# MAGIC # 02_read_master: Load Master Tables from Bronze (M003)
+# MAGIC # 21_read_master: Load Master Tables from Bronze (M003)
 # MAGIC
 # MAGIC This notebook reads master/reference data from the Bronze layer:
 # MAGIC * **bronze.customer_master** - Customer dimension
@@ -44,9 +44,7 @@ try:
             F.col("product_id"),
             F.col("product_name"),
             F.col("category_id"),
-            F.col("unit_price").cast("decimal(18,2)").alias("unit_price"),
-            F.col("cost_price").cast("decimal(18,2)").alias("cost_price"),
-            F.col("supplier_id")
+            F.col("unit_price").cast("decimal(18,2)").alias("unit_price")
         )
     
     # Optimize for broadcast joins (product master is typically small)
@@ -60,6 +58,33 @@ try:
     
 except Exception as e:
     print(f"✗ Error reading product master from Bronze: {str(e)}")
+    raise
+
+# COMMAND ----------
+
+# DBTITLE 1,Read Category Master
+# M003: Load category master from Bronze
+start_time = datetime.now()
+
+bronze_table = f"{catalog_name}.bronze.category_master"
+print(f"Reading category master from Bronze: {bronze_table}")
+
+try:
+    df_category_master = spark.table(bronze_table) \
+        .select(
+            F.col("category_id"),
+            F.col("category_name"),
+            F.col("parent_category_id")
+        )
+    
+    category_count = df_category_master.count()
+    duration = (datetime.now() - start_time).total_seconds()
+    
+    print(f"✓ Loaded {category_count:,} categories from Bronze")
+    log_metrics("read_category_master_bronze", category_count, duration)
+    
+except Exception as e:
+    print(f"✗ Error reading category master from Bronze: {str(e)}")
     raise
 
 # COMMAND ----------
@@ -79,8 +104,7 @@ try:
             F.col("email"),
             F.col("phone"),
             F.col("birth_date").cast("date").alias("birth_date"),
-            F.col("gender"),
-            F.col("registration_date").cast("date").alias("registration_date")
+            F.col("gender")
         )
     
     customer_count = df_customer_master.count()
@@ -108,9 +132,7 @@ try:
             F.col("store_id"),
             F.col("store_name"),
             F.col("region"),
-            F.col("open_date").cast("date").alias("open_date"),
-            F.col("store_type"),
-            F.col("manager_name")
+            F.col("open_date").cast("date")
         )
     
     store_count = df_store_master.count()
@@ -131,18 +153,16 @@ start_time = datetime.now()
 
 bronze_table = f"{catalog_name}.bronze.retail_calendar"
 print(f"Reading retail calendar from Bronze: {bronze_table}")
-
 try:
     df_retail_calendar = spark.table(bronze_table) \
         .select(
-            F.col("date").cast("date").alias("date"),
-            F.col("year").cast("int").alias("year"),
-            F.col("month").cast("int").alias("month"),
-            F.col("day").cast("int").alias("day"),
+            F.expr("try_cast(date as date)").alias("date"),
+            F.col("year").cast("int"),
+            F.col("month").cast("int"),
+            F.col("day").cast("int"),
             F.col("day_of_week"),
-            F.col("fiscal_year").cast("int").alias("fiscal_year"),
-            F.col("fiscal_quarter"),
-            F.col("is_retail_peak").cast("boolean").alias("is_retail_peak")
+            F.col("fiscal_year").cast("int"),
+            F.col("is_retail_peak").cast("boolean")
         )
     
     calendar_count = df_retail_calendar.count()
@@ -163,6 +183,7 @@ print("\n" + "="*70)
 print("MASTER DATA SUMMARY")
 print("="*70)
 print(f"Product Master:       {df_product_master.count():,} records (broadcast-optimized)")
+print(f"Category Master:      {df_category_master.count():,} records")
 print(f"Customer Master:      {df_customer_master.count():,} records (cached)")
 print(f"Store Master:         {df_store_master.count():,} records")
 print(f"Retail Calendar:      {df_retail_calendar.count():,} records")
@@ -170,6 +191,9 @@ print("="*70)
 
 print("\n[Product Master Sample]")
 display(df_product_master.limit(5))
+
+print("\n[Category Master Sample]")
+display(df_category_master.limit(5))
 
 print("\n[Customer Master Sample]")
 display(df_customer_master.limit(5))
@@ -179,7 +203,3 @@ display(df_store_master.limit(5))
 
 print("\n[Retail Calendar Sample]")
 display(df_retail_calendar.limit(5))
-
-# COMMAND ----------
-
-

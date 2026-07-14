@@ -5,7 +5,7 @@
 # ///
 # DBTITLE 1,M001: Write to Bronze Layer
 # MAGIC %md
-# MAGIC # 01_write_bronze: Raw Data Ingestion to Bronze (M001)
+# MAGIC # 10_write_bronze_pos: Raw Data Ingestion to Bronze (M001)
 # MAGIC
 # MAGIC This notebook implements the **Bronze layer** - the raw data landing zone:
 # MAGIC * Reads POS transaction data from S3 (CSV format)
