@@ -26,7 +26,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Load Enriched Data
-# MAGIC %run ./05_join_master
+# MAGIC %run ./24_join_master
 
 # COMMAND ----------
 
@@ -37,6 +37,7 @@ start_time = datetime.now()
 print("Adding audit columns...")
 
 df_silver = add_audit_columns(df_sales_enriched)
+# This line adds audit columns (e.g., created_at, updated_at, job_id) to the enriched sales DataFrame.
 
 print(f"✓ Audit columns added: {df_silver.count():,} records")
 
